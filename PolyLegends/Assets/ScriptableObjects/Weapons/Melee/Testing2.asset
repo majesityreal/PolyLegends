@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b47240cffd8fa74bb4f542b73763191, type: 3}
+  m_Name: Testing2
+  m_EditorClassIdentifier: 
+  weaponName: Testing number 2
+  description: This is a testing sword number to for swapping
+  attackDamage: 0
+  attackSpeed: 0
+  gameObject: {fileID: 2444265708260440770, guid: d218fbdacee6df343a40e4527ae96a8d, type: 3}
