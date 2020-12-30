@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b47240cffd8fa74bb4f542b73763191, type: 3}
+  m_Name: Longsword1
+  m_EditorClassIdentifier: 
+  weaponName: Longsword1
+  description: The first longsword in the game, name pending
+  attackDamage: 10
+  attackSpeed: 1
+  positionOffset: {x: -0.00006, y: 0.00021, z: 0.00268}
+  angleOffset: {x: 90, y: 0, z: 0}
+  gameObject: {fileID: 3360383295706642406, guid: d218fbdacee6df343a40e4527ae96a8d, type: 3}
+  soundDelay: 0.22

@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &2444265708260440770
+--- !u!1 &3360383295706642406
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,12 +8,12 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3071479249060257912}
-  - component: {fileID: 2094118369056223197}
-  - component: {fileID: 4245551696528775959}
-  - component: {fileID: 3254606540249995715}
-  - component: {fileID: 3254606540249995712}
-  - component: {fileID: 3254606540249995714}
+  - component: {fileID: 2731901983428472156}
+  - component: {fileID: 1316865235809690361}
+  - component: {fileID: 3864799579219138099}
+  - component: {fileID: 2477845231634046242}
+  - component: {fileID: 2477845231634046236}
+  - component: {fileID: 2477845231634046237}
   m_Layer: 0
   m_Name: Sword
   m_TagString: Untagged
@@ -21,39 +21,39 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3071479249060257912
+--- !u!4 &2731901983428472156
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2444265708260440770}
-  m_LocalRotation: {x: 0.30123228, y: 0.6625955, z: 0.5994661, w: 0.33296663}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.010000005, y: 0.009999997, z: 0.010000003}
+  m_GameObject: {fileID: 3360383295706642406}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -0.00006, y: 0.00021, z: 0.00268}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &2094118369056223197
+--- !u!33 &1316865235809690361
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2444265708260440770}
+  m_GameObject: {fileID: 3360383295706642406}
   m_Mesh: {fileID: -2886378080263924940, guid: e070bfd085faed74db89131994819f4c, type: 3}
---- !u!23 &4245551696528775959
+--- !u!23 &3864799579219138099
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2444265708260440770}
+  m_GameObject: {fileID: 3360383295706642406}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
-  m_DynamicOccludee: 0
+  m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -87,13 +87,13 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &3254606540249995715
+--- !u!136 &2477845231634046242
 CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2444265708260440770}
+  m_GameObject: {fileID: 3360383295706642406}
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
@@ -101,13 +101,13 @@ CapsuleCollider:
   m_Height: 2.4
   m_Direction: 1
   m_Center: {x: 0, y: 0.7, z: 0}
---- !u!82 &3254606540249995712
+--- !u!82 &2477845231634046236
 AudioSource:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2444265708260440770}
+  m_GameObject: {fileID: 3360383295706642406}
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
@@ -197,18 +197,18 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &3254606540249995714
+--- !u!114 &2477845231634046237
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2444265708260440770}
+  m_GameObject: {fileID: 3360383295706642406}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 13459437c4408d54dafb6adba1d9c000, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackDamage: 10
-  swordCollider: {fileID: 3254606540249995715}
+  weapon: {fileID: 11400000, guid: 3f50fc0162ba5304196f0afa72b11313, type: 2}
+  swordCollider: {fileID: 2477845231634046242}
   enemyLayer: Enemy

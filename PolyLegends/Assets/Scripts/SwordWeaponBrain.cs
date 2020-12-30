@@ -1,11 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class SwordWeaponBrain : MonoBehaviour
 {
 
-    public float attackDamage = 10.0f;
+    public MeleeWeapon weapon;
 
     public CapsuleCollider swordCollider;
     // public LayerMask enemyLayers;
@@ -34,9 +32,8 @@ public class SwordWeaponBrain : MonoBehaviour
         if (other.gameObject.layer == LayerMask.NameToLayer(enemyLayer))
         {
             // get the enemy hit
-            other.gameObject.GetComponent<HealthManager>().Damage(attackDamage);
+            other.gameObject.GetComponent<HealthManager>().Damage(weapon.attackDamage);
             // deal damage to them (they must have death logic and a damageable/health manager script)
-            Debug.Log("You hit an enemy lol");
         }
     }
 
@@ -45,6 +42,7 @@ public class SwordWeaponBrain : MonoBehaviour
         this.idle = boolean;
         if (!boolean)
         {
+            // TODO add an audio source for weapons, make it centralized in a Scriptable Object
             GetComponent<AudioSource>().Play();
         }
     }

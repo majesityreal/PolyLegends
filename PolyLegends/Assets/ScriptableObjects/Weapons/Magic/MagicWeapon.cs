@@ -10,7 +10,12 @@ public class MagicWeapon : Weapon
     public float attackDamage;
     public float attackSpeed;
 
+    public Vector3 positionOffset;
+    public Vector3 angleOffset;
+
     public GameObject gameObject;
+
+    public float soundDelay;
 
     public bool hasGravity;
     public float range;
@@ -23,4 +28,17 @@ public class MagicWeapon : Weapon
         return this.gameObject;
     }
 
+    public override Vector3 getAngleOffset()
+    {
+        return this.angleOffset;
+    }
+    public override Vector3 getPositionOffset()
+    {
+        return this.positionOffset;
+    }
+
+    public override string GetWeaponType()
+    {
+        return "Magic";
+    }
 }

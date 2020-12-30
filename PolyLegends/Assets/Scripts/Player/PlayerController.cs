@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour
     private CharacterController p_controller;
     public Animator animator;
 
+    public WeaponManager weaponManager;
+
     public float playerSpeed = 1.0f;
     public float maxSpeed = 1000f;
 
@@ -18,16 +20,9 @@ public class PlayerController : MonoBehaviour
 
     public float mouseSensitivity = 1.0f;
 
-    public Quaternion nextRotation;
-    public Vector2 _move;
-    public Vector2 _look;
-    public float rotationLerp = 0.5f;
-
     public GameObject mainCamera;
     public GameObject aimCamera;
 
-    public Transform attackPoint;
-    public float attackRange = 0.5f;
     public LayerMask enemyLayers;
 
 
@@ -36,6 +31,10 @@ public class PlayerController : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Locked;
         p_controller = player.GetComponent<CharacterController>();
+        if (weaponManager == null)
+        {
+            weaponManager = player.GetComponentInChildren<WeaponManager>();
+        }
 
     }
 
@@ -152,21 +151,67 @@ public class PlayerController : MonoBehaviour
 
     private float GetCurrentWeaponCooldown()
     {
-        return 1.0f;
+        // created this variable for future modifiers to be able to be applied. 1.0f is the default attack speed
+        float weaponCooldown = 1.0f;
+        if (weaponManager.equippedWeapon.GetWeaponType().Equals("Melee"))
+        {
+            MeleeWeapon tempWeapon = (MeleeWeapon) weaponManager.equippedWeapon;
+            weaponCooldown = tempWeapon.attackSpeed;
+        }
+        if (weaponManager.equippedWeapon.GetWeaponType().Equals("Ranged"))
+        {
+            RangedWeapon tempWeapon = (RangedWeapon)weaponManager.equippedWeapon;
+            weaponCooldown = tempWeapon.attackSpeed;
+        }
+        if (weaponManager.equippedWeapon.GetWeaponType().Equals("Magic"))
+        {
+            MagicWeapon tempWeapon = (MagicWeapon)weaponManager.equippedWeapon;
+            weaponCooldown = tempWeapon.attackSpeed;
+        }
+        return weaponCooldown;
     }
-    private IEnumerator WeaponCooldown(float seconds)
+
+    private float GetCurrentWeaponSoundDelay()
     {
-        yield return new WaitForSeconds(seconds);
+        float soundDelay = 0.15f;
+        if (weaponManager.equippedWeapon.GetWeaponType().Equals("Melee"))
+        {
+            MeleeWeapon tempWeapon = (MeleeWeapon)weaponManager.equippedWeapon;
+            soundDelay = tempWeapon.soundDelay;
+        }
+        if (weaponManager.equippedWeapon.GetWeaponType().Equals("Ranged"))
+        {
+            RangedWeapon tempWeapon = (RangedWeapon)weaponManager.equippedWeapon;
+            soundDelay = tempWeapon.soundDelay;
+        }
+        if (weaponManager.equippedWeapon.GetWeaponType().Equals("Magic"))
+        {
+            MagicWeapon tempWeapon = (MagicWeapon)weaponManager.equippedWeapon;
+            soundDelay = tempWeapon.soundDelay;
+        }
+        return soundDelay;
+    }
+    private IEnumerator WeaponCooldown(float totalDelay)
+    {
+        yield return new WaitForSeconds(totalDelay);
         this.canAttack = true;
     }
+
+    private IEnumerator PlaySound(float playSoundTime)
+    {
+        yield return new WaitForSeconds(playSoundTime);
+        GetComponent<AudioSource>().Play();
+    }
+
 
     // ADD LOGIC BASED ON WEAPONS, MAKE A WEAPON MANAGER
     void Attack()
     {
         this.canAttack = false;
         animator.SetTrigger("MainAttack");
-        GetComponent<AudioSource>().Play();
+        animator.SetTrigger("Fire");
         StartCoroutine(WeaponCooldown(GetCurrentWeaponCooldown()));
+        StartCoroutine(PlaySound(GetCurrentWeaponSoundDelay()));
     }
 
 }

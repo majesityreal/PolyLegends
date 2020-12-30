@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 998f4d533695edd45b56319d5eeeff50, type: 3}
   m_Name: RangedWeapons
   m_EditorClassIdentifier: 
-  scriptableObjects: []
+  scriptableObjects:
+  - {fileID: 11400000, guid: 839fda58016ecb246986304ed6e8f120, type: 2}

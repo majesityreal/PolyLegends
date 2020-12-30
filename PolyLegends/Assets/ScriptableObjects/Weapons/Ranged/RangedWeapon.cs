@@ -10,7 +10,12 @@ public class RangedWeapon : Weapon
     public float attackDamage;
     public float attackSpeed;
 
+    public Vector3 positionOffset;
+    public Vector3 angleOffset;
+
     public GameObject gameObject;
+
+    public float soundDelay;
 
     public float accuracy;
     public float range;
@@ -20,4 +25,17 @@ public class RangedWeapon : Weapon
         return this.gameObject;
     }
 
+    public override Vector3 getAngleOffset()
+    {
+        return this.angleOffset;
+    }
+    public override Vector3 getPositionOffset()
+    {
+        return this.positionOffset;
+    }
+
+    public override string GetWeaponType()
+    {
+        return "Ranged";
+    }
 }
