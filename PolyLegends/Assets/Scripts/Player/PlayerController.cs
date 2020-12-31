@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour
 
     private bool isAiming = false;
     private bool canAttack = true;
+    private bool canAttack2 = true;
 
     public float mouseSensitivity = 1.0f;
 
@@ -82,7 +83,16 @@ public class PlayerController : MonoBehaviour
                 // player.transform.Rotate(rotation);
             }
             transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x + yRot, transform.rotation.eulerAngles.y + xRot, 0);
-/*            if (Input.GetMouseButton(1))
+
+            if (Input.GetMouseButton(0))
+            {
+                // TODO add weapon logic
+                if (canAttack)
+                {
+                    Attack();
+                }
+            }
+            if (Input.GetMouseButton(1))
             {
                 ToggleAim(true);
                 // MAKE IT SO YOU CAN USE SOME OF YOUR SPRINT JUICE / ENERGY TO PULL THE BOW EVEN HARDER!! // when attacking, energy is not used but it isnt replenished
@@ -92,17 +102,10 @@ public class PlayerController : MonoBehaviour
                 if (this.isAiming)
                 {
                     animator.SetTrigger("Fire");
+                    Attack2();
                     Debug.Log("FIRE FIRE FIRE FIRE");
                 }
                 ToggleAim(false);
-            }*/
-            if (Input.GetMouseButton(0))
-            {
-                // TODO add weapon logic
-                if (canAttack)
-                {
-                    Attack();
-                }
             }
             if (Input.GetKeyDown("p"))
             {
@@ -195,6 +198,7 @@ public class PlayerController : MonoBehaviour
     {
         yield return new WaitForSeconds(totalDelay);
         this.canAttack = true;
+        this.canAttack2 = true;
     }
 
     private IEnumerator PlaySound(float playSoundTime)
@@ -210,6 +214,13 @@ public class PlayerController : MonoBehaviour
         this.canAttack = false;
         animator.SetTrigger("MainAttack");
         animator.SetTrigger("Fire");
+        StartCoroutine(WeaponCooldown(GetCurrentWeaponCooldown()));
+        StartCoroutine(PlaySound(GetCurrentWeaponSoundDelay()));
+    }
+
+    void Attack2()
+    {
+        this.canAttack2 = false;
         StartCoroutine(WeaponCooldown(GetCurrentWeaponCooldown()));
         StartCoroutine(PlaySound(GetCurrentWeaponSoundDelay()));
     }
