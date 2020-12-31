@@ -51,6 +51,10 @@ public class WeaponManager : MonoBehaviour
         Debug.Log(transform.position);
         transform.localPosition = weapon.getPositionOffset();
         Debug.Log(transform.position);
+    }
 
+    public GameObject getCurrentWeapon()
+    {
+        return this.currentWeapon;
     }
 }

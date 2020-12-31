@@ -9,6 +9,8 @@ public class BowWeaponBrain : MonoBehaviour
 
     public GameObject arrow;
 
+    private Vector3 arrowRotation;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -24,6 +26,13 @@ public class BowWeaponBrain : MonoBehaviour
 
     public void Shoot()
     {
-        GameObject shotArrow = Instantiate(arrow);
+        GameObject shotArrow = Instantiate(arrow, GetComponent<Transform>().position, Quaternion.Euler(90, 90, 0));
+        shotArrow.transform.localEulerAngles = arrowRotation;
+        shotArrow.GetComponent<Rigidbody>().AddForce(shotArrow.transform.forward * 10.0f, ForceMode.Force);
+    }
+
+    public void setArrowRotation(Vector3 quat)
+    {
+        this.arrowRotation = quat;
     }
 }

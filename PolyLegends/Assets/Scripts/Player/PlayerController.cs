@@ -220,6 +220,11 @@ public class PlayerController : MonoBehaviour
 
     void Attack2()
     {
+        if (weaponManager.getCurrentWeapon().GetComponent<BowWeaponBrain>() != null) {
+            Vector3 localEulerAngles = new Vector3(player.transform.rotation.x, player.transform.rotation.y, player.transform.rotation.z);
+            weaponManager.getCurrentWeapon().GetComponent<BowWeaponBrain>().setArrowRotation(localEulerAngles);
+            weaponManager.getCurrentWeapon().GetComponent<BowWeaponBrain>().Shoot();
+        }
         this.canAttack2 = false;
         StartCoroutine(WeaponCooldown(GetCurrentWeaponCooldown()));
         StartCoroutine(PlaySound(GetCurrentWeaponSoundDelay()));
