@@ -26,9 +26,21 @@ public class BowWeaponBrain : MonoBehaviour
 
     public void Shoot()
     {
-        GameObject shotArrow = Instantiate(arrow, GetComponent<Transform>().position, Quaternion.Euler(90, 90, 0));
-        shotArrow.transform.localEulerAngles = arrowRotation;
-        shotArrow.GetComponent<Rigidbody>().AddForce(shotArrow.transform.forward * 10.0f, ForceMode.Force);
+        Vector3 aOffset = new Vector3(arrowRotation.x, arrowRotation.y - 90, arrowRotation.z);
+        Quaternion angleOffset = Quaternion.Euler(aOffset.x, aOffset.y, aOffset.z);
+        Vector3 position = transform.position;
+
+        GameObject shotArrow = Instantiate(arrow, position, angleOffset);
+        shotArrow.transform.localEulerAngles = aOffset;
+/*        shotArrow.transform.localPosition = GET THE POSITION OFFSETT
+*/      Debug.Log(arrowRotation);
+        Vector3 addedForce = shotArrow.transform.forward;
+        // Rotates the vector to face the forward direction
+        addedForce.Set(addedForce.z, addedForce.y, -addedForce.x);
+        addedForce *= 20;
+        addedForce.y *= 2;
+        shotArrow.GetComponent<Rigidbody>().AddForce(addedForce, ForceMode.Force);
+        shotArrow.transform.Rotate(0, 0, 0);
     }
 
     public void setArrowRotation(Vector3 quat)

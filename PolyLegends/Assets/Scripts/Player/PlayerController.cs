@@ -103,7 +103,6 @@ public class PlayerController : MonoBehaviour
                 {
                     animator.SetTrigger("Fire");
                     Attack2();
-                    Debug.Log("FIRE FIRE FIRE FIRE");
                 }
                 ToggleAim(false);
             }
@@ -221,7 +220,7 @@ public class PlayerController : MonoBehaviour
     void Attack2()
     {
         if (weaponManager.getCurrentWeapon().GetComponent<BowWeaponBrain>() != null) {
-            Vector3 localEulerAngles = new Vector3(player.transform.rotation.x, player.transform.rotation.y, player.transform.rotation.z);
+            Vector3 localEulerAngles = player.transform.eulerAngles;
             weaponManager.getCurrentWeapon().GetComponent<BowWeaponBrain>().setArrowRotation(localEulerAngles);
             weaponManager.getCurrentWeapon().GetComponent<BowWeaponBrain>().Shoot();
         }
