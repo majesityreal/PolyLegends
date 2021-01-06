@@ -19,6 +19,14 @@ public class PlayerController : MonoBehaviour
     private bool canAttack = true;
     private bool canAttack2 = true;
 
+    private bool isGrounded = true;
+    private float lastTimeJumped = 0f;
+    Vector3 p_GroundNormal;
+    [Tooltip("Physic layers checked to consider the player grounded")]
+    public LayerMask groundCheckLayers = -1;
+    [Tooltip("distance from the bottom of the character controller capsule to test for grounded")]
+    public float groundCheckDistance = 0.05f;
+
     public float mouseSensitivity = 1.0f;
 
     public GameObject mainCamera;
@@ -26,6 +34,8 @@ public class PlayerController : MonoBehaviour
 
     public LayerMask enemyLayers;
 
+    const float k_JumpGroundingPreventionTime = 0.2f;
+    const float k_GroundCheckDistanceInAir = 0.07f;
 
     // Start is called before the first frame update
     void Start()
@@ -36,6 +46,7 @@ public class PlayerController : MonoBehaviour
         {
             weaponManager = player.GetComponentInChildren<WeaponManager>();
         }
+        lastTimeJumped = Time.time;
 
     }
 
@@ -62,6 +73,8 @@ public class PlayerController : MonoBehaviour
     {
         if (CanProcessInput())
         {
+            GroundCheck();
+            HandleGravity();
             animator.SetFloat("MovementSpeed", Mathf.Abs(p_controller.velocity.magnitude));
             if (Mathf.Abs(Input.GetAxis("Vertical")) > 0 || Mathf.Abs(Input.GetAxis("Horizontal")) > 0)
             {
@@ -106,8 +119,9 @@ public class PlayerController : MonoBehaviour
                 }
                 ToggleAim(false);
             }
-            if (Input.GetKeyDown("p"))
+            if (Input.GetKeyDown(KeyCode.Space))
             {
+                HandleJump();
             }
         }
     }
@@ -138,18 +152,86 @@ public class PlayerController : MonoBehaviour
 
     private void HandleMovement()
     {
-        Vector3 move = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
-        move *= playerSpeed;
-        // constrain move input to a maximum magnitude of 1, otherwise diagonal movement might exceed the max move speed defined
-        move = Vector3.ClampMagnitude(move, maxSpeed);
-        Vector3 movementTest = player.transform.TransformVector(move);
-        // this makes sure the player can't 'fly' or go through the ground
-        movementTest.y = 0.0f;
-        // this ensures that movement is frame independent
-        movementTest *= Time.deltaTime;
-        p_controller.Move(movementTest);
-/*        Debug.Log(p_controller.velocity.magnitude);
-*/    }
+        if (isGrounded)
+        {
+            Vector3 move = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
+            move *= playerSpeed;
+            // constrain move input to a maximum magnitude of 1, otherwise diagonal movement might exceed the max move speed defined
+            move = Vector3.ClampMagnitude(move, maxSpeed);
+            Vector3 movementTest = player.transform.TransformVector(move);
+            // this makes sure the player can't 'fly' or go through the ground
+            movementTest.y = 0.0f;
+            // this ensures that movement is frame independent
+            movementTest *= Time.deltaTime;
+            p_controller.Move(movementTest);
+            /*        Debug.Log(p_controller.velocity.magnitude);
+            */
+        }
+        else
+        {
+
+        }
+    }
+
+    private void HandleJump()
+    {
+        if (isGrounded)
+        {
+            lastTimeJumped = Time.time;
+            p_controller.Move(new Vector3(0, 10, 0));
+            return;
+        }
+        Debug.Log("Not grounded");
+    }
+
+    private void HandleGravity()
+    {
+        if (!isGrounded) {
+            p_controller.Move(new Vector3(0, -0.1f, 0));
+        }
+    }
+
+    void GroundCheck()
+    {
+        // Make sure that the ground check distance while already in air is very small, to prevent suddenly snapping to ground
+        float chosenGroundCheckDistance = isGrounded ? (p_controller.skinWidth + groundCheckDistance) : k_GroundCheckDistanceInAir;
+
+        // reset values before the ground check
+        isGrounded = false;
+        p_GroundNormal = Vector3.up;
+
+        // only try to detect ground if it's been a short amount of time since last jump; otherwise we may snap to the ground instantly after we try jumping
+        if (Time.time >= lastTimeJumped + k_JumpGroundingPreventionTime)
+        {
+            // if we're grounded, collect info about the ground normal with a downward capsule cast representing our character capsule
+            if (Physics.CapsuleCast(GetCapsuleTopHemisphere(p_controller.height), GetCapsuleBottomHemisphere(), p_controller.radius, Vector3.down, out RaycastHit hit, 2.0f, groundCheckLayers, QueryTriggerInteraction.Ignore))
+            {
+                Debug.Log("Raycasting downwards!!!");
+                // storing the upward direction for the surface found
+                p_GroundNormal = hit.normal;
+
+                // Only consider this a valid ground hit if the ground normal goes in the same direction as the character up
+                // and if the slope angle is lower than the character controller's limit
+                if (Vector3.Dot(hit.normal, transform.up) > 0f &&
+                    IsNormalUnderSlopeLimit(p_GroundNormal))
+                {
+                    isGrounded = true;
+
+                    // handle snapping to the ground
+                    if (hit.distance > p_controller.skinWidth)
+                    {
+                        p_controller.Move(Vector3.down * hit.distance);
+                    }
+                }
+            }
+        }
+    }
+
+    // Returns true if the slope angle represented by the given normal is under the slope angle limit of the character controller
+    bool IsNormalUnderSlopeLimit(Vector3 normal)
+    {
+        return Vector3.Angle(transform.up, normal) <= p_controller.slopeLimit;
+    }
 
     private float GetCurrentWeaponCooldown()
     {
@@ -229,4 +311,16 @@ public class PlayerController : MonoBehaviour
         StartCoroutine(PlaySound(GetCurrentWeaponSoundDelay()));
     }
 
+
+    // Gets the center point of the bottom hemisphere of the character controller capsule    
+    Vector3 GetCapsuleBottomHemisphere()
+    {
+        return transform.position + (transform.up * p_controller.radius);
+    }
+
+    // Gets the center point of the top hemisphere of the character controller capsule    
+    Vector3 GetCapsuleTopHemisphere(float atHeight)
+    {
+        return transform.position + (transform.up * (atHeight - p_controller.radius));
+    }
 }

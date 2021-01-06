@@ -97,6 +97,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2821e531f1556cf4aa9a67a32e6d431b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weapon: {fileID: 0}
+  weapon: {fileID: 11400000, guid: 839fda58016ecb246986304ed6e8f120, type: 2}
   enemyLayer: Enemy
   arrow: {fileID: 4442773123216240572, guid: 6079f9ab46daff94c81f85ea99892cda, type: 3}

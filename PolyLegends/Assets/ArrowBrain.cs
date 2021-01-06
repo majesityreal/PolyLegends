@@ -36,7 +36,9 @@ public class ArrowBrain : MonoBehaviour
         {
             // get the enemy hit
             other.gameObject.GetComponent<HealthManager>().Damage(10);
+            Destroy(gameObject);
             // deal damage to them (they must have death logic and a damageable/health manager script)
         }
+
     }
 }

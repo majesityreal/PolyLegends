@@ -130,7 +130,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e47ef233651d4944a8dc58dffb5e1536, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyLayer: 
+  enemyLayer: Enemy
   arrowRB: {fileID: 5623464544737287481}
 --- !u!1 &5394873419583052348
 GameObject:
