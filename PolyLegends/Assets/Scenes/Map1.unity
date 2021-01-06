@@ -539,6 +539,10 @@ PrefabInstance:
       propertyPath: mainCamera
       value: 
       objectReference: {fileID: 1349908170}
+    - target: {fileID: 8950847670038583404, guid: 83b301642fc4e624785bfc0a6384bb6f, type: 3}
+      propertyPath: airDragMultiplier
+      value: 0.02
+      objectReference: {fileID: 0}
     - target: {fileID: 8950847670038583405, guid: 83b301642fc4e624785bfc0a6384bb6f, type: 3}
       propertyPath: m_Name
       value: Player

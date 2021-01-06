@@ -13,19 +13,23 @@ public class PlayerController : MonoBehaviour
     public WeaponManager weaponManager;
 
     public float playerSpeed = 1.0f;
+    public float airDragMultiplier = 0.5f;
     public float maxSpeed = 1000f;
+    public Vector3 playerVelocity;
 
     private bool isAiming = false;
     private bool canAttack = true;
     private bool canAttack2 = true;
 
+    public float gravityDownForce = 1.0f;
+    public float jumpForce = 1.0f;
     private bool isGrounded = true;
     private float lastTimeJumped = 0f;
     Vector3 p_GroundNormal;
     [Tooltip("Physic layers checked to consider the player grounded")]
     public LayerMask groundCheckLayers = -1;
     [Tooltip("distance from the bottom of the character controller capsule to test for grounded")]
-    public float groundCheckDistance = 0.05f;
+    public float groundCheckDistance = 1f;
 
     public float mouseSensitivity = 1.0f;
 
@@ -35,7 +39,7 @@ public class PlayerController : MonoBehaviour
     public LayerMask enemyLayers;
 
     const float k_JumpGroundingPreventionTime = 0.2f;
-    const float k_GroundCheckDistanceInAir = 0.07f;
+    const float k_GroundCheckDistanceInAir = 0.2f;
 
     // Start is called before the first frame update
     void Start()
@@ -47,7 +51,6 @@ public class PlayerController : MonoBehaviour
             weaponManager = player.GetComponentInChildren<WeaponManager>();
         }
         lastTimeJumped = Time.time;
-
     }
 
     // Update is called once per frame
@@ -74,28 +77,42 @@ public class PlayerController : MonoBehaviour
         if (CanProcessInput())
         {
             GroundCheck();
-            HandleGravity();
             animator.SetFloat("MovementSpeed", Mathf.Abs(p_controller.velocity.magnitude));
-            if (Mathf.Abs(Input.GetAxis("Vertical")) > 0 || Mathf.Abs(Input.GetAxis("Horizontal")) > 0)
-            {
-                HandleMovement();
-
-            }
             float xRot = 0, yRot = 0;
             if (Mathf.Abs(Input.GetAxis("Mouse X")) > 0)
             {
                 xRot = (Input.GetAxis("Mouse X") * mouseSensitivity);
+                    Debug.Log("Within the zone");
                 // player.transform.Rotate(rotation);
-/*                Quaternion q = transform.rotation;
-                q.eulerAngles = new Vector3(q.eulerAngles.x, q.eulerAngles.y, 0);
-                player.transform.rotation = q;*/
+                /*                Quaternion q = transform.rotation;
+                                q.eulerAngles = new Vector3(q.eulerAngles.x, q.eulerAngles.y, 0);
+                                player.transform.rotation = q;*/
             }
             if (Mathf.Abs(Input.GetAxis("Mouse Y")) > 0)
             {
                 yRot = -(Input.GetAxis("Mouse Y") * mouseSensitivity);
                 // player.transform.Rotate(rotation);
             }
-            transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x + yRot, transform.rotation.eulerAngles.y + xRot, 0);
+            Debug.Log(transform.rotation.eulerAngles.x + yRot);
+            float tempXVal = transform.rotation.eulerAngles.x + yRot;
+            float tempChecker = transform.rotation.eulerAngles.x + yRot;
+/*            if (tempChecker < 20f)
+            {
+                tempXVal = Mathf.Clamp(transform.rotation.eulerAngles.x + yRot, 0f, 20f);
+            }*/
+            if (tempChecker < 340f && tempChecker > 20f)
+            {
+                tempXVal = Mathf.Clamp(transform.rotation.eulerAngles.x + yRot, 0f, 20f);
+            }
+            if (tempChecker > 330f)
+            {
+                tempXVal = Mathf.Clamp(transform.rotation.eulerAngles.x + yRot, 340f, 360f);
+            }
+            /*            float tempXVal = Mathf.Clamp(transform.rotation.eulerAngles.x + yRot, 0f, 20f);
+            */
+            /*            tempXVal = transform.rotation.eulerAngles.x + yRot;
+            */
+            transform.rotation = Quaternion.Euler(tempXVal, transform.rotation.eulerAngles.y + xRot, 0);
 
             if (Input.GetMouseButton(0))
             {
@@ -119,10 +136,11 @@ public class PlayerController : MonoBehaviour
                 }
                 ToggleAim(false);
             }
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (isGrounded && Input.GetKeyDown(KeyCode.Space))
             {
                 HandleJump();
             }
+            HandleMovement();
         }
     }
 
@@ -152,36 +170,39 @@ public class PlayerController : MonoBehaviour
 
     private void HandleMovement()
     {
+        Vector3 move = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
         if (isGrounded)
-        {
-            Vector3 move = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
+            /*if (Mathf.Abs(Input.GetAxis("Vertical")) > 0 || Mathf.Abs(Input.GetAxis("Horizontal")) > 0)
+            {*/
+                {
             move *= playerSpeed;
-            // constrain move input to a maximum magnitude of 1, otherwise diagonal movement might exceed the max move speed defined
-            move = Vector3.ClampMagnitude(move, maxSpeed);
-            Vector3 movementTest = player.transform.TransformVector(move);
+            // constrain move input to a maximum magnitude of playerSpeed, otherwise diagonal movement might exceed the playerSpeed
+            move = Vector3.ClampMagnitude(move, playerSpeed * (1 / (Mathf.Sqrt(2.0f))));
+            playerVelocity += player.transform.TransformVector(move);
             // this makes sure the player can't 'fly' or go through the ground
-            movementTest.y = 0.0f;
-            // this ensures that movement is frame independent
-            movementTest *= Time.deltaTime;
-            p_controller.Move(movementTest);
+/*            playerVelocity.y = 0.0f;
+*/            // this ensures that movement is frame independent
+            playerVelocity *= Time.deltaTime;
             /*        Debug.Log(p_controller.velocity.magnitude);
             */
         }
         else
         {
-
+            float airSpeed = playerSpeed * airDragMultiplier * 0.01f;
+            move *= airSpeed;
+            // constrain move input to a maximum magnitude of 1, otherwise diagonal movement might exceed the max move speed defined
+            move = Vector3.ClampMagnitude(move, airSpeed * (1 / (Mathf.Sqrt(2.0f))));
+            playerVelocity += player.transform.TransformVector(move);
+            playerVelocity += Vector3.down * gravityDownForce * Time.deltaTime;
         }
+        p_controller.Move(playerVelocity);
     }
 
     private void HandleJump()
     {
-        if (isGrounded)
-        {
-            lastTimeJumped = Time.time;
-            p_controller.Move(new Vector3(0, 10, 0));
-            return;
-        }
-        Debug.Log("Not grounded");
+        playerVelocity += new Vector3(0,1,0) * jumpForce;
+        lastTimeJumped = Time.time;
+        Debug.Log("JUMPO");
     }
 
     private void HandleGravity()
@@ -204,10 +225,10 @@ public class PlayerController : MonoBehaviour
         if (Time.time >= lastTimeJumped + k_JumpGroundingPreventionTime)
         {
             // if we're grounded, collect info about the ground normal with a downward capsule cast representing our character capsule
-            if (Physics.CapsuleCast(GetCapsuleTopHemisphere(p_controller.height), GetCapsuleBottomHemisphere(), p_controller.radius, Vector3.down, out RaycastHit hit, 2.0f, groundCheckLayers, QueryTriggerInteraction.Ignore))
+            if (Physics.CapsuleCast(GetCapsuleTopHemisphere(p_controller.height), GetCapsuleBottomHemisphere(), p_controller.radius, Vector3.down, out RaycastHit hit, chosenGroundCheckDistance, groundCheckLayers, QueryTriggerInteraction.Ignore))
             {
-                Debug.Log("Raycasting downwards!!!");
-                // storing the upward direction for the surface found
+/*                Debug.Log("Raycasting downwards!!!");
+*/                // storing the upward direction for the surface found
                 p_GroundNormal = hit.normal;
 
                 // Only consider this a valid ground hit if the ground normal goes in the same direction as the character up
