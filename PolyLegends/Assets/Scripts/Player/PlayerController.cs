@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
     public Animator animator;
 
     public WeaponManager weaponManager;
+    public AudioManager audioManager;
 
     public float playerSpeed = 1.0f;
     public float airDragMultiplier = 0.5f;
@@ -18,6 +19,7 @@ public class PlayerController : MonoBehaviour
     public Vector3 playerVelocity;
 
     private bool isAiming = false;
+    private float startAimTime;
     private bool canAttack = true;
     private bool canAttack2 = true;
 
@@ -49,6 +51,10 @@ public class PlayerController : MonoBehaviour
         if (weaponManager == null)
         {
             weaponManager = player.GetComponentInChildren<WeaponManager>();
+        }
+        if (audioManager == null)
+        {
+            audioManager = FindObjectOfType<AudioManager>();
         }
         lastTimeJumped = Time.time;
     }
@@ -82,7 +88,6 @@ public class PlayerController : MonoBehaviour
             if (Mathf.Abs(Input.GetAxis("Mouse X")) > 0)
             {
                 xRot = (Input.GetAxis("Mouse X") * mouseSensitivity);
-                    Debug.Log("Within the zone");
                 // player.transform.Rotate(rotation);
                 /*                Quaternion q = transform.rotation;
                                 q.eulerAngles = new Vector3(q.eulerAngles.x, q.eulerAngles.y, 0);
@@ -93,7 +98,6 @@ public class PlayerController : MonoBehaviour
                 yRot = -(Input.GetAxis("Mouse Y") * mouseSensitivity);
                 // player.transform.Rotate(rotation);
             }
-            Debug.Log(transform.rotation.eulerAngles.x + yRot);
             float tempXVal = transform.rotation.eulerAngles.x + yRot;
             float tempChecker = transform.rotation.eulerAngles.x + yRot;
 /*            if (tempChecker < 20f)
@@ -122,19 +126,35 @@ public class PlayerController : MonoBehaviour
                     Attack();
                 }
             }
-            if (Input.GetMouseButton(1))
+            if (Input.GetMouseButtonDown(1) && this.canAttack2)
             {
                 ToggleAim(true);
+                animator.SetTrigger("DrawBow");
+                PlaySound(((RangedWeapon)weaponManager.equippedWeaponSO).s_PullBow);
+                this.canAttack2 = false;
+                this.canAttack = false;
+                StartCoroutine(WeaponCooldown(GetCurrentWeaponCooldown()));
                 // MAKE IT SO YOU CAN USE SOME OF YOUR SPRINT JUICE / ENERGY TO PULL THE BOW EVEN HARDER!! // when attacking, energy is not used but it isnt replenished
             }
-            else
+            if (Input.GetMouseButtonUp(1))
             {
-                if (this.isAiming)
+                if (this.isAiming && weaponManager.equippedWeaponType.Equals("RangedWeapon"))
                 {
-                    animator.SetTrigger("Fire");
-                    Attack2();
+                    if (Time.time - this.startAimTime < ((RangedWeapon)weaponManager.equippedWeaponSO).attackSpeed)
+                    {
+                        float timeLeftToAttack = ((RangedWeapon)weaponManager.equippedWeaponSO).attackSpeed - (Time.time - this.startAimTime);
+                        Debug.Log(timeLeftToAttack);
+                        StartCoroutine(ShootBow(timeLeftToAttack));
+                        ToggleAim(false);
+                        animator.SetTrigger("Fire");
+                    }
+                    else
+                    {
+                        ShootBow();
+                        ToggleAim(false);
+                        animator.SetTrigger("Fire");
+                    }
                 }
-                ToggleAim(false);
             }
             if (isGrounded && Input.GetKeyDown(KeyCode.Space))
             {
@@ -158,19 +178,35 @@ public class PlayerController : MonoBehaviour
         this.isAiming = isAiming;
         if (isAiming)
         {
-            mainCamera.SetActive(false);
-            aimCamera.SetActive(true);
+            this.startAimTime = Time.time;
+            // set the movement speed to go down
+            // play bow sound
         }
         else
         {
-            aimCamera.SetActive(false);
-            mainCamera.SetActive(true);
+            // set the movement speed to normal
         }
     }
 
     private void HandleMovement()
     {
         Vector3 move = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
+        if (move.x > 0)
+        {
+            animator.SetInteger("WalkDirection", 2);
+        }
+        else if (move.x < 0)
+        {
+            animator.SetInteger("WalkDirection", 4);
+        }
+        if (move.z > 0)
+        {
+            animator.SetInteger("WalkDirection", 1);
+        }
+        else if (move.z < 0)
+        {
+            animator.SetInteger("WalkDirection", 3);
+        }
         if (isGrounded)
             /*if (Mathf.Abs(Input.GetAxis("Vertical")) > 0 || Mathf.Abs(Input.GetAxis("Horizontal")) > 0)
             {*/
@@ -188,11 +224,11 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            float airSpeed = playerSpeed * airDragMultiplier * 0.01f;
+/*            float airSpeed = playerSpeed * airDragMultiplier * 0.01f;
             move *= airSpeed;
             // constrain move input to a maximum magnitude of 1, otherwise diagonal movement might exceed the max move speed defined
             move = Vector3.ClampMagnitude(move, airSpeed * (1 / (Mathf.Sqrt(2.0f))));
-            playerVelocity += player.transform.TransformVector(move);
+            playerVelocity += player.transform.TransformVector(move);*/
             playerVelocity += Vector3.down * gravityDownForce * Time.deltaTime;
         }
         p_controller.Move(playerVelocity);
@@ -200,8 +236,11 @@ public class PlayerController : MonoBehaviour
 
     private void HandleJump()
     {
-        playerVelocity += new Vector3(0,1,0) * jumpForce;
+        Vector3 jumpVector = new Vector3(0, 1, 0);
+        jumpVector.y = player.transform.TransformVector(jumpVector).y;
+        playerVelocity += jumpVector * jumpForce;
         lastTimeJumped = Time.time;
+        animator.SetTrigger("Jump");
         Debug.Log("JUMPO");
     }
 
@@ -237,11 +276,11 @@ public class PlayerController : MonoBehaviour
                     IsNormalUnderSlopeLimit(p_GroundNormal))
                 {
                     isGrounded = true;
-
                     // handle snapping to the ground
                     if (hit.distance > p_controller.skinWidth)
                     {
                         p_controller.Move(Vector3.down * hit.distance);
+                        p_controller.Move(new Vector3(0, -player.transform.position.y, 0));
                     }
                 }
             }
@@ -258,19 +297,19 @@ public class PlayerController : MonoBehaviour
     {
         // created this variable for future modifiers to be able to be applied. 1.0f is the default attack speed
         float weaponCooldown = 1.0f;
-        if (weaponManager.equippedWeapon.GetWeaponType().Equals("Melee"))
+        if (weaponManager.equippedWeaponSO.GetWeaponType().Equals("Melee"))
         {
-            MeleeWeapon tempWeapon = (MeleeWeapon) weaponManager.equippedWeapon;
+            MeleeWeapon tempWeapon = (MeleeWeapon) weaponManager.equippedWeaponSO;
             weaponCooldown = tempWeapon.attackSpeed;
         }
-        if (weaponManager.equippedWeapon.GetWeaponType().Equals("Ranged"))
+        if (weaponManager.equippedWeaponSO.GetWeaponType().Equals("Ranged"))
         {
-            RangedWeapon tempWeapon = (RangedWeapon)weaponManager.equippedWeapon;
+            RangedWeapon tempWeapon = (RangedWeapon)weaponManager.equippedWeaponSO;
             weaponCooldown = tempWeapon.attackSpeed;
         }
-        if (weaponManager.equippedWeapon.GetWeaponType().Equals("Magic"))
+        if (weaponManager.equippedWeaponSO.GetWeaponType().Equals("Magic"))
         {
-            MagicWeapon tempWeapon = (MagicWeapon)weaponManager.equippedWeapon;
+            MagicWeapon tempWeapon = (MagicWeapon)weaponManager.equippedWeaponSO;
             weaponCooldown = tempWeapon.attackSpeed;
         }
         return weaponCooldown;
@@ -279,19 +318,19 @@ public class PlayerController : MonoBehaviour
     private float GetCurrentWeaponSoundDelay()
     {
         float soundDelay = 0.15f;
-        if (weaponManager.equippedWeapon.GetWeaponType().Equals("Melee"))
+        if (weaponManager.equippedWeaponSO.GetWeaponType().Equals("Melee"))
         {
-            MeleeWeapon tempWeapon = (MeleeWeapon)weaponManager.equippedWeapon;
+            MeleeWeapon tempWeapon = (MeleeWeapon)weaponManager.equippedWeaponSO;
             soundDelay = tempWeapon.soundDelay;
         }
-        if (weaponManager.equippedWeapon.GetWeaponType().Equals("Ranged"))
+        if (weaponManager.equippedWeaponSO.GetWeaponType().Equals("Ranged"))
         {
-            RangedWeapon tempWeapon = (RangedWeapon)weaponManager.equippedWeapon;
+            RangedWeapon tempWeapon = (RangedWeapon)weaponManager.equippedWeaponSO;
             soundDelay = tempWeapon.soundDelay;
         }
-        if (weaponManager.equippedWeapon.GetWeaponType().Equals("Magic"))
+        if (weaponManager.equippedWeaponSO.GetWeaponType().Equals("Magic"))
         {
-            MagicWeapon tempWeapon = (MagicWeapon)weaponManager.equippedWeapon;
+            MagicWeapon tempWeapon = (MagicWeapon)weaponManager.equippedWeaponSO;
             soundDelay = tempWeapon.soundDelay;
         }
         return soundDelay;
@@ -301,12 +340,21 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(totalDelay);
         this.canAttack = true;
         this.canAttack2 = true;
+        if (weaponManager.equippedWeaponType.Equals("MeleeWeapon"))
+        {
+            weaponManager.currentWeapon.GetComponent<SwordWeaponBrain>().setIdle(true);
+        }
     }
 
-    private IEnumerator PlaySound(float playSoundTime)
+    private IEnumerator PlaySound(string sound, float playSoundTime)
     {
         yield return new WaitForSeconds(playSoundTime);
-        GetComponent<AudioSource>().Play();
+        audioManager.Play(sound);
+    }
+
+    private void PlaySound(string sound)
+    {
+        audioManager.Play(sound);
     }
 
 
@@ -315,13 +363,24 @@ public class PlayerController : MonoBehaviour
     {
         this.canAttack = false;
         animator.SetTrigger("MainAttack");
-        animator.SetTrigger("Fire");
         StartCoroutine(WeaponCooldown(GetCurrentWeaponCooldown()));
-        StartCoroutine(PlaySound(GetCurrentWeaponSoundDelay()));
+        switch (weaponManager.equippedWeaponType) {
+            case "MeleeWeapon":
+                StartCoroutine(PlaySound(((MeleeWeapon)weaponManager.equippedWeaponSO).s_SwordSwing, GetCurrentWeaponSoundDelay()));
+                weaponManager.currentWeapon.GetComponent<SwordWeaponBrain>().setIdle(false);
+                break;
+            case "RangedWeapon":
+                StartCoroutine(PlaySound(((RangedWeapon)weaponManager.equippedWeaponSO).s_PullBow, 0f));
+                StartCoroutine(PlaySound(((RangedWeapon)weaponManager.equippedWeaponSO).s_ShootArrow, GetCurrentWeaponSoundDelay()));
+                break;
+            case "MagicWeapon":
+                break;
+        }
     }
 
     void Attack2()
     {
+        animator.SetTrigger("Attack2");
         if (weaponManager.getCurrentWeapon().GetComponent<BowWeaponBrain>() != null) {
             Vector3 localEulerAngles = player.transform.eulerAngles;
             weaponManager.getCurrentWeapon().GetComponent<BowWeaponBrain>().setArrowRotation(localEulerAngles);
@@ -329,9 +388,25 @@ public class PlayerController : MonoBehaviour
         }
         this.canAttack2 = false;
         StartCoroutine(WeaponCooldown(GetCurrentWeaponCooldown()));
-        StartCoroutine(PlaySound(GetCurrentWeaponSoundDelay()));
+        StartCoroutine(PlaySound("", GetCurrentWeaponSoundDelay()));
     }
 
+    void ShootBow()
+    {
+        if (weaponManager.getCurrentWeapon().GetComponent<BowWeaponBrain>() != null)
+        {
+            Vector3 localEulerAngles = player.transform.eulerAngles;
+            weaponManager.getCurrentWeapon().GetComponent<BowWeaponBrain>().setArrowRotation(localEulerAngles);
+            weaponManager.getCurrentWeapon().GetComponent<BowWeaponBrain>().Shoot();
+            StartCoroutine(PlaySound(((RangedWeapon)weaponManager.equippedWeaponSO).s_ShootArrow, 0f));
+        }
+    }
+
+    private IEnumerator ShootBow(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        ShootBow();
+    }
 
     // Gets the center point of the bottom hemisphere of the character controller capsule    
     Vector3 GetCapsuleBottomHemisphere()

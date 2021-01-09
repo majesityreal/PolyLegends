@@ -20,3 +20,4 @@ MonoBehaviour:
   angleOffset: {x: 90, y: 0, z: 0}
   gameObject: {fileID: 3360383295706642406, guid: d218fbdacee6df343a40e4527ae96a8d, type: 3}
   soundDelay: 0.22
+  s_SwordSwing: Heavy Sword Swing

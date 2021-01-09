@@ -20,6 +20,9 @@ public class RangedWeapon : Weapon
     public float accuracy;
     public float range;
 
+    public string s_ShootArrow;
+    public string s_PullBow;
+
     public override GameObject getGameObject()
     {
         return this.gameObject;

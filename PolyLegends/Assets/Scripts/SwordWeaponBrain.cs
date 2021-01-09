@@ -1,24 +1,37 @@
 ﻿using UnityEngine;
 
-public class SwordWeaponBrain : MonoBehaviour
+public class SwordWeaponBrain : WeaponBrain
 {
 
     public MeleeWeapon weapon;
 
     public CapsuleCollider swordCollider;
     // public LayerMask enemyLayers;
-    public string enemyLayer;
+    public string[] stringEnemyLayers;
+    private int[] enemyLayers;
 
-    private bool idle = false;
+    private bool idle = true;
 
-    // Start is called before the first frame update
     void Start()
     {
-        if (enemyLayer == null)
-            enemyLayer = "Enemy";
+        idle = true;
+        if (stringEnemyLayers == null || stringEnemyLayers.Length == 0)
+        {
+            enemyLayers = GetDefaultLayers();
+        }
+        else
+        {
+            enemyLayers = new int[stringEnemyLayers.Length];
+            int i = 0;
+            foreach (string s in stringEnemyLayers)
+            {
+                enemyLayers[i] = LayerMask.NameToLayer(stringEnemyLayers[i]);
+                i++;
+            }
+        }
+
     }
 
-    // Update is called once per frame
     void Update()
     {
         
@@ -28,22 +41,12 @@ public class SwordWeaponBrain : MonoBehaviour
     {
         if (idle)
             return;
-
-        if (other.gameObject.layer == LayerMask.NameToLayer(enemyLayer))
-        {
-            // get the enemy hit
-            other.gameObject.GetComponent<HealthManager>().Damage(weapon.attackDamage);
-            // deal damage to them (they must have death logic and a damageable/health manager script)
-        }
+        // other.gameObject.layer == LayerMask.NameToLayer(enemyLayer)
+        DamageHitEnemy(enemyLayers, other, weapon.attackDamage);
     }
 
     public void setIdle(bool boolean)
     {
         this.idle = boolean;
-        if (!boolean)
-        {
-            // TODO add an audio source for weapons, make it centralized in a Scriptable Object
-            GetComponent<AudioSource>().Play();
-        }
     }
 }

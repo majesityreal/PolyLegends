@@ -17,6 +17,8 @@ public class MeleeWeapon : Weapon
 
     public float soundDelay;
 
+    public string s_SwordSwing;
+
     public override GameObject getGameObject()
     {
         return this.gameObject;

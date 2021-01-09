@@ -212,4 +212,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weapon: {fileID: 11400000, guid: 91fc43e9d3b28be45822cd5c4c9ef4e9, type: 2}
   swordCollider: {fileID: 2183154712245950054}
-  enemyLayer: Enemy
+  stringEnemyLayers: []

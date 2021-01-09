@@ -100,3 +100,4 @@ MonoBehaviour:
   weapon: {fileID: 11400000, guid: 839fda58016ecb246986304ed6e8f120, type: 2}
   enemyLayer: Enemy
   arrow: {fileID: 4442773123216240572, guid: 6079f9ab46daff94c81f85ea99892cda, type: 3}
+  playerShootPos: {fileID: 5254863167291519302, guid: 83b301642fc4e624785bfc0a6384bb6f, type: 3}

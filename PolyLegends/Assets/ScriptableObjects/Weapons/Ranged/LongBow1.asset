@@ -15,10 +15,12 @@ MonoBehaviour:
   weaponName: Longbow1
   description: The first longbow implemented, name coming soon
   attackDamage: 10
-  attackSpeed: 0.5
-  positionOffset: {x: -0.0001, y: -0.0003, z: -0.00013}
-  angleOffset: {x: -180, y: 90, z: 0}
+  attackSpeed: 0.6
+  positionOffset: {x: -0.0001, y: 0.05, z: -0.00013}
+  angleOffset: {x: -180, y: 120, z: 0}
   gameObject: {fileID: 2656934735816327469, guid: 2d6a7003d29d6f04289b7cfee3a7bf5b, type: 3}
-  soundDelay: 0
+  soundDelay: 0.7
   accuracy: 0
-  range: 0
+  range: 4
+  s_ShootArrow: Bow Shoot
+  s_PullBow: Bow Pull

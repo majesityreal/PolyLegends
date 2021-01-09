@@ -6,15 +6,17 @@ public class WeaponManager : MonoBehaviour
 {
 
     public GameObject currentWeapon;
-    public Weapon equippedWeapon;
+    public Weapon equippedWeaponSO;
     public string equippedWeaponType;
+
+    public GameObject leftHand;
 
     public ScriptableObjectList weapons;
 
     // Start is called before the first frame update
     void Start()
     {
-        equippedWeapon = (MeleeWeapon)((ScriptableObjectList)weapons.GetAtIndex(0)).GetAtIndex(0);
+        equippedWeaponSO = (MeleeWeapon)((ScriptableObjectList)weapons.GetAtIndex(0)).GetAtIndex(0);
     }
 
     // Update is called once per frame
@@ -22,21 +24,24 @@ public class WeaponManager : MonoBehaviour
     {
         if (Input.GetKeyDown("1"))
         {
-            equippedWeapon = (MeleeWeapon)((ScriptableObjectList)weapons.GetAtIndex(0)).GetAtIndex(0);
-            Debug.Log(equippedWeapon.name);
-            SwitchToWeapon(equippedWeapon);
+            equippedWeaponSO = (MeleeWeapon)((ScriptableObjectList)weapons.GetAtIndex(0)).GetAtIndex(0);
+            Debug.Log(equippedWeaponSO.name);
+            equippedWeaponType = "MeleeWeapon";
+            SwitchToWeapon(equippedWeaponSO);
         }
         if (Input.GetKeyDown("2"))
         {
-            equippedWeapon = (MeleeWeapon)((ScriptableObjectList)weapons.GetAtIndex(0)).GetAtIndex(1);
-            Debug.Log(equippedWeapon.name);
-            SwitchToWeapon(equippedWeapon);
+            equippedWeaponSO = (MeleeWeapon)((ScriptableObjectList)weapons.GetAtIndex(0)).GetAtIndex(1);
+            Debug.Log(equippedWeaponSO.name);
+            equippedWeaponType = "MeleeWeapon";
+            SwitchToWeapon(equippedWeaponSO);
         }
         if (Input.GetKeyDown("3"))
         {
-            equippedWeapon = (RangedWeapon)((ScriptableObjectList)weapons.GetAtIndex(1)).GetAtIndex(0);
-            Debug.Log(equippedWeapon.name);
-            SwitchToWeapon(equippedWeapon);
+            equippedWeaponSO = (RangedWeapon)((ScriptableObjectList)weapons.GetAtIndex(1)).GetAtIndex(0);
+            Debug.Log(equippedWeaponSO.name);
+            equippedWeaponType = "RangedWeapon";
+            SwitchToWeapon(equippedWeaponSO);
         }
     }
 
@@ -45,12 +50,20 @@ public class WeaponManager : MonoBehaviour
         Destroy(currentWeapon);
         Vector3 aOffset = weapon.getAngleOffset();
         Quaternion angleOffset = Quaternion.Euler(aOffset.x,aOffset.y,aOffset.z);
-        Vector3 position = transform.position;
-        currentWeapon = Instantiate(weapon.getGameObject(), position, angleOffset, transform);
+        if (equippedWeaponType.Equals("RangedWeapon"))
+        {
+            Vector3 position = leftHand.transform.position;
+            position += weapon.getPositionOffset();
+            currentWeapon = Instantiate(weapon.getGameObject(), position, angleOffset, leftHand.transform);
+        }
+        else
+        {
+            Vector3 position = transform.position;
+            position += weapon.getPositionOffset();
+            currentWeapon = Instantiate(weapon.getGameObject(), position, angleOffset, transform);
+        }
         currentWeapon.transform.localEulerAngles = aOffset;
-        Debug.Log(transform.position);
         transform.localPosition = weapon.getPositionOffset();
-        Debug.Log(transform.position);
     }
 
     public GameObject getCurrentWeapon()
