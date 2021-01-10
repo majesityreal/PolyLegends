@@ -1,6 +1,6 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class EnemyBrain : MonoBehaviour
 {
@@ -12,9 +12,11 @@ public class EnemyBrain : MonoBehaviour
     public float attackSpeed;
 
     public Animator animator;
+    private NavMeshAgent nav;
 
     void Start()
     {
+        nav = GetComponent<NavMeshAgent>();
         if (attackSpeed == 0f)
         {
             attackSpeed = 1.0f;
@@ -29,7 +31,9 @@ public class EnemyBrain : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        animator.SetFloat("MovementSpeed", nav.velocity.magnitude);
+        Debug.Log(nav.velocity.magnitude);
+        Physics.OverlapBox();
     }
 
     public void Attack()

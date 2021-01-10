@@ -14,11 +14,14 @@ public class Pathfinding : MonoBehaviour
 
     public EnemyBrain enemyBrain;
 
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
+        player = GameObject.Find("Player");
         enemyBrain = GetComponent<EnemyBrain>();
         nav = GetComponent<NavMeshAgent>();
+    }
+    void Start()
+    {
         nav.destination = player.transform.position;
     }
 
@@ -32,8 +35,8 @@ public class Pathfinding : MonoBehaviour
             {
                 enemyBrain.Attack();
             }
-            Debug.Log("I am happy here");
-            Debug.Log(Mathf.Abs((gameObject.transform.root.position - player.transform.position).magnitude));
+/*            Debug.Log("I am happy here");
+*/            Debug.Log(Mathf.Abs((gameObject.transform.root.position - player.transform.position).magnitude));
         }
         else
         {
