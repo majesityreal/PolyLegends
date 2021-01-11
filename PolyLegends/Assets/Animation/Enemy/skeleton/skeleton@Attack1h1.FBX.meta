@@ -349,8 +349,8 @@ ModelImporter:
       events:
       - time: 0.44491526
         functionName: HitDetection
-        data: 
-        objectReferenceParameter: {instanceID: 0}
+        data: test
+        objectReferenceParameter: {fileID: 899269276739073533, guid: 40b6c2e8e1ab9aa49b54dc56f6764b91, type: 3}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0

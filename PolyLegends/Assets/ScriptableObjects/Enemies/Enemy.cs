@@ -5,6 +5,8 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Enemy", fileName = "New Enemy")]
 public class Enemy : ScriptableObject
 {
+    public GameObject gameObject;
+
     public string enemyName;
     public string description;
 

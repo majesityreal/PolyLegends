@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 998f4d533695edd45b56319d5eeeff50, type: 3}
   m_Name: MeleeWeapons
   m_EditorClassIdentifier: 
-  scriptableObjects:
+  list:
   - {fileID: 11400000, guid: 3f50fc0162ba5304196f0afa72b11313, type: 2}
   - {fileID: 11400000, guid: 91fc43e9d3b28be45822cd5c4c9ef4e9, type: 2}

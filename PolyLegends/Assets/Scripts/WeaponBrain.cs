@@ -1,11 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class WeaponBrain : MonoBehaviour
 {
 
-    public bool DamageHitEnemy(int[] enemyLayers, Collider other, float attackDamage)
+    public static bool DamageHitEnemy(int[] enemyLayers, Collider other, float attackDamage)
     {
         bool temp = false;
         foreach (int i in enemyLayers)
@@ -21,7 +19,7 @@ public class WeaponBrain : MonoBehaviour
         return temp;
     }
 
-    public int[] GetDefaultLayers()
+    public static int[] GetDefaultLayers()
     {
         string s = "Enemy";
         string s2 = "Building";
@@ -30,4 +28,15 @@ public class WeaponBrain : MonoBehaviour
         layers[1] = LayerMask.NameToLayer(s2);
         return layers;
     }
+
+    public static int[] GetEnemyDefaultLayers()
+    {
+        string s = "Player";
+        string s2 = "Building";
+        int[] layers = new int[2];
+        layers[0] = LayerMask.NameToLayer(s);
+        layers[1] = LayerMask.NameToLayer(s2);
+        return layers;
+    }
+
 }

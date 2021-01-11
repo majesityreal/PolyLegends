@@ -36,8 +36,8 @@ public class Pathfinding : MonoBehaviour
                 enemyBrain.Attack();
             }
 /*            Debug.Log("I am happy here");
-*/            Debug.Log(Mathf.Abs((gameObject.transform.root.position - player.transform.position).magnitude));
-        }
+*//*            Debug.Log(Mathf.Abs((gameObject.transform.root.position - player.transform.position).magnitude));
+*/        }
         else
         {
             if (Mathf.Abs((nav.destination - player.transform.position).magnitude) > distanceStopFromPlayer)

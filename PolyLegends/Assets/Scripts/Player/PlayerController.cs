@@ -161,6 +161,10 @@ public class PlayerController : MonoBehaviour
             {
                 HandleJump();
             }
+            if (Input.GetKeyDown("p"))
+            {
+                FindObjectOfType<EnemySpawner>().SpawnEnemy("Skeleton", gameObject.transform);
+            }
             HandleMovement();
         }
     }

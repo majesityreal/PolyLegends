@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27d007e1a133aa647b82b72fa0fb2d7f, type: 3}
   m_Name: Skeleton
   m_EditorClassIdentifier: 
+  gameObject: {fileID: 3239568696336711751, guid: 40b6c2e8e1ab9aa49b54dc56f6764b91, type: 3}
   enemyName: Skeleton
-  description: A basic skeleton enemy
+  description: Basic skeleton enemy
   health: 100
   moveSpeed: 0
-  baseDamage: 0
+  baseDamage: 20
